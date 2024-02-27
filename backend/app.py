@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pymysql
 import os
+import sys
 
 app = Flask(__name__)
 CORS(app) 
@@ -42,7 +43,10 @@ def execute_sql():
     try:
         with connection.cursor() as cursor:
             cursor.execute(sql_query)
+            column_names = [col[0] for col in cursor.description]
+            print(column_names, file=sys.stderr)
             result = cursor.fetchall()
+            result = {"columns": column_names, "rows": result}
             return jsonify(result)
     except Exception as e:
         return jsonify({"error": str(e)})
@@ -50,4 +54,5 @@ def execute_sql():
         connection.close()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    ## app.run(debug=True)
+    app.run(debug=True ,port=3000,use_reloader=True)
