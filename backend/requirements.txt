@@ -2,3 +2,4 @@ Flask
 flask_cors
 pymysql
 python-dotenv
+openai

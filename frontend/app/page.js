@@ -1,12 +1,16 @@
 'use client';
 import { useState } from 'react';
+import { useDisclosure } from '@mantine/hooks';
 import Link from 'next/link';
-import { Table, Stack, Textarea, Image, BackgroundImage, AspectRatio, Container, Center, Title, TextInput, Button } from '@mantine/core';
+import { Modal, Text, Image, Table, Stack, Textarea, Container, Center, Title, Button } from '@mantine/core';
 import { Wand } from 'tabler-icons-react';
 
 export default function Home() {
-  const [sql, setSql] = useState('');
-  const [queryResults, setQueryResults] = useState(null);
+  const [ sql, setSql ] = useState('');
+  const [ queryResults, setQueryResults ] = useState(null);
+  const [ opened, { open, close }] = useDisclosure(false);
+  const [ hint, setHint ] = useState('');
+  const [ error, setError ] = useState('')
 
   // super duper basic, just getting something easy done here
   const handleExecuteSQL = async () => {
@@ -28,14 +32,30 @@ export default function Home() {
     }
   };
 
+  const handleCloseErrorModal = () => {
+    setHint('')
+    setError('')
+    setQueryResults(null)
+    close()
+  }
+
   function DynamicTable({ data }) {
     if (data && data.error) {
+      setError(data.error)
+      setHint(data.hint)
+      open()
+
       // add funny error GIF
       return (
         <Container padding="lg">
-          {/* <Image src="/error.gif" alt="Error" /> */}
-          <Title ta='center'>ERROR</Title>
-          <div>{data.error}</div>
+          <Modal title='Small Problem!' opened={opened} onClose={handleCloseErrorModal} size='md'>
+            <Image mt={20} src={'/sad_error.gif'} width={250} height={250} />
+            <Title mt={30}>OPPSIE!</Title>
+            <Title order={3}>The server responded with: </Title>
+            <Text>{error}</Text>
+            <Title order={3}>Here is a hint to help you: </Title>
+            <Text>{hint}</Text>
+          </Modal>
         </Container>
       );
     }
@@ -47,8 +67,6 @@ export default function Home() {
     // console.log(Object.keys(data['rows'][0]));
     return (
       <Table striped highlightOnHover>
-
-        {/* Column Names */}
         <Table.Thead>
           <Table.Tr>
             {data['columns'].map((col, index) => (
@@ -94,6 +112,7 @@ export default function Home() {
         <Button variant='big-button' rightSection={<Wand />} onClick={handleExecuteSQL} />
         {queryResults && <DynamicTable data={queryResults} />}
       </Stack>
+
     </Container>
   );
 }
