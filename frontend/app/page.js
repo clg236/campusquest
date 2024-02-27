@@ -29,18 +29,37 @@ export default function Home() {
   };
 
   function DynamicTable({ data }) {
-    const columns = data && data.length > 0 ? Object.keys(data[0]) : []; 
+    if (data && data.error) {
+      // add funny error GIF
+      return (
+        <Container padding="lg">
+          {/* <Image src="/error.gif" alt="Error" /> */}
+          <Title ta='center'>ERROR</Title>
+          <div>{data.error}</div>
+        </Container>
+      );
+    }
+    // const columns = data && data.length > 0 ? Object.keys(data['rows'][0]) : [];
+    const columns = Array.from({ length: data['columns'].length }, (_, index) => index);
+
+    // console.log(data['columns']);
+    // console.log(columns); // need to return actual column names
+    // console.log(Object.keys(data['rows'][0]));
     return (
       <Table striped highlightOnHover>
+
+        {/* Column Names */}
         <Table.Thead>
           <Table.Tr>
-            {columns.map((col, index) => (
+            {data['columns'].map((col, index) => (
               <Table.Th key={index}>{col}</Table.Th>
             ))}
           </Table.Tr>
         </Table.Thead>
+
+        {/* Content */}
         <Table.Tbody>
-          {data.map((row, rowIndex) => (
+          {data['rows'].map((row, rowIndex) => (
             <Table.Tr key={rowIndex}>
               {columns.map((col, cellIndex) => (
                 <Table.Td key={cellIndex}>{row[col]}</Table.Td> 
