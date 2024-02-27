@@ -21,8 +21,8 @@ const handwriting = localFont({
 })
 
 export const metadata = {
-  title: "CampusQuest",
-  description: "Made by Professor Grewell",
+  title: "query questt",
+  description: "Made by xtian and Anish",
 };
 
 export default function RootLayout({ children }) {

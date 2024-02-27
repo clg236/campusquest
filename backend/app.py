@@ -6,7 +6,7 @@ from openai import OpenAI
 import json
 
 app = Flask(__name__)
-CORS(app)
+CORS(app);
 
 DB_HOST = os.getenv("DB_HOST")
 DB_USER = os.getenv("DB_USER")
@@ -31,7 +31,7 @@ def send_to_llm(sql_error, sql_query):
             frequency_penalty=0.0,
             presence_penalty=0.0
         )
-        hint = response.choices[0].message.content  # Make sure this path matches the actual response structure
+        hint = response.choices[0].message.content
         print(hint)
         return hint
 
@@ -41,13 +41,14 @@ def send_to_llm(sql_error, sql_query):
 @app.route('/execute-sql', methods=['POST'])
 def execute_sql():
     data = request.json
+    db = data.get('db', '')
     sql_query = data.get('sql', '')
     
     if not sql_query:
         return jsonify({"error": "SQL query is missing."})
 
     try:
-        connection = pymysql.connect(host=DB_HOST, user=DB_USER, password=DB_PASSWORD, db=DB_NAME)
+        connection = pymysql.connect(host=DB_HOST, user=DB_USER, password=DB_PASSWORD, db=db)
         with connection.cursor() as cursor:
             cursor.execute(sql_query)
             column_names = [col[0] for col in cursor.description]
