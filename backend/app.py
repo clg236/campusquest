@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 CORS(app) 
 
-# Database connection parameters
+# these should be an in .env file, but for now we'll just hardcode them
 DB_HOST = "128.122.85.30"
 DB_USER = "student"
 DB_PASSWORD = os.getenv("DB_PASSWORD")
@@ -17,11 +17,11 @@ def run_query(sql):
     try:
         with connection.cursor() as cursor:
             cursor.execute(sql)
-            # Fetch column names
+            # gotta fetch the column names (not sure this will work...)
             column_names = [col[0] for col in cursor.description]
-            # Fetch all rows
+            # get all of the rows
             rows = cursor.fetchall()
-            # Combine column names and rows for a more descriptive result
+            
             result = {"columns": column_names, "rows": rows}
             return result
     finally:
@@ -29,15 +29,13 @@ def run_query(sql):
 
 @app.route('/execute-sql', methods=['POST'])
 def execute_sql():
-    # Assuming you have already set 'DB_PASSWORD' in your environment variables
-    password = os.environ.get('DB_PASSWORD')
     data = request.json
     sql_query = data['sql']
 
     connection = pymysql.connect(
         host="128.122.85.30",
         user="student",
-        passwd=password,
+        passwd="SternRocks888!",
         db="campus_quest"
     )
 
