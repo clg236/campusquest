@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import Link from 'next/link';
-import { Modal, Text, Image, Table, Stack, Textarea, Container, Center, Title, Button } from '@mantine/core';
+import { Loader, Modal, Text, Image, Table, Stack, Textarea, Container, Center, Title, Button } from '@mantine/core';
 import { Wand } from 'tabler-icons-react';
 
 export default function Home() {
@@ -11,10 +11,12 @@ export default function Home() {
   const [ opened, { open, close }] = useDisclosure(false);
   const [ hint, setHint ] = useState('');
   const [ error, setError ] = useState('')
+  const [ loading, setLoading ] = useState(false)
 
   // super duper basic, just getting something easy done here
   const handleExecuteSQL = async () => {
     try {
+      setLoading(true)
       // we can't access the DB from off campus, so have to run this locally...
       const response = await fetch('http://127.0.0.1:5000/execute-sql', {
         method: 'POST',
@@ -26,9 +28,11 @@ export default function Home() {
       if (!response.ok) throw new Error('Failed to execute SQL');
       const data = await response.json();
       setQueryResults(data);
+      setLoading(false)
     } catch (error) {
       console.error(error);
       setQueryResults(null); 
+      setLoading(false)
     }
   };
 
@@ -109,7 +113,7 @@ export default function Home() {
           value={sql}
           onChange={(event) => setSql(event.currentTarget.value)}
         />
-        <Button variant='big-button' rightSection={<Wand />} onClick={handleExecuteSQL} />
+        <Button variant='big-button' rightSection={loading ? <Loader /> : <Wand />} onClick={handleExecuteSQL} />
         {queryResults && <DynamicTable data={queryResults} />}
       </Stack>
 
