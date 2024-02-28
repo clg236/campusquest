@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { TextInput, Select, Loader, Modal, Text, Image, Table, Stack, Textarea, Container, Center, Title, Button } from '@mantine/core';
 import { Wand } from 'tabler-icons-react';
 
-const homeGIFs = ['/dog_1.gif', 'magic_1.gif'];
-const successGIFs = ['/magic_1.gif'];
+const homeGIFs = ['/dog_1.gif', 'magic_1.gif', '/spell_1.gif', '/spell_2.gif'];
+const successGIFs = ['/magic_1.gif', '/win_1.gif', '/win_2.gif'];
 const errorGIFs = ['/error_1.gif','/error_2.gif', '/error_3.gif'];
 
 function getRandomGif(gifArray) {
