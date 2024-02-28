@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import Link from 'next/link';
-import { TextInput, Select, Loader, Modal, Text, Image, Table, Stack, Textarea, Container, Center, Title, Button } from '@mantine/core';
+import { TextInput, Paper, Select, Group, Loader, Modal, Text, Image, Table, Stack, Textarea, Container, Center, Title, Button } from '@mantine/core';
 import { Wand } from 'tabler-icons-react';
 
 const homeGIFs = ['/dog_1.gif', 'magic_1.gif', '/spell_1.gif', '/spell_2.gif'];
@@ -157,7 +157,11 @@ export default function Home() {
       </Stack>
       
     </Container>
-    {queryResults && <DynamicTable data={queryResults} />}
+
+    {queryResults && <Paper m={30}><DynamicTable data={queryResults} /></Paper>}
+
+
+    <Group mr={30} justify='flex-end'>brought to you by Christian and Anish</Group>
     </>
   );
 }
