@@ -127,18 +127,19 @@ export default function Home() {
         <Center>
           <Image mt={30} src={currentGif} style={{ borderRadius: '15px'}} w={200}/>
         </Center>
-        <TextInput
+
+      <Stack gap="xs">
+      <TextInput
           miw={400}
           style={{ fontSize: 20 }}
           label='Your Name'
           value={name}
           onChange={(event) => setName(event.currentTarget.value)}
         />
-      <Stack>
         <Select 
         miw={400}
-        label="Choose a Database"
-          style={{ width: 300, fontSize: 20 }}
+          label="Choose a Database"
+          style={{ fontSize: 20 }}
           data={['yelp', 'campus_quest']}
           value={db}
           onChange={setDB}

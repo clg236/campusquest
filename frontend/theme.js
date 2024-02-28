@@ -2,11 +2,11 @@
 import { createTheme, rem } from '@mantine/core';
 
 const randomRPGColors = [
-    'rgba(143, 89, 52, 1)',  // Brown (Earth)
-    'rgba(77, 116, 85, 1)',  // Dark green (Forest)
-    'rgba(184, 134, 11, 1)', // Gold (Treasure)
-    'rgba(165, 42, 42, 1)',  // Dark red (Blood/Danger)
-    'rgba(75, 83, 32, 1)',   // Olive (Camouflage)
+  'rgba(255, 105, 180, 1)', // Hot pink (Neon, vibrant)
+  'rgba(0, 255, 255, 1)',   // Bright cyan (Digital, cybernetic)
+  'rgba(255, 95, 109, 1)',  // Soft red (Sunset, nostalgia)
+  'rgba(50, 115, 220, 1)',  // Bright blue (Sky, freedom)
+  'rgba(255, 165, 0, 1)',   // Neon orange (Energy, vibrancy)
   ];
   
 
@@ -181,15 +181,15 @@ export const theme = createTheme({
               },
               label: {
                   textAlign: 'left',
-                  fontSize: rem(25),
+                  fontSize: rem(20),
               },
             input: {
-              padding: `0 ${rem(20)}`,
+              fontSize: rem(20),
               border: `${rem(2)} solid #000`,
-              fontSize: rem(15),
               boxShadow: theme.shadows.customInputShadow,
-              //padding: `0 ${rem(2)}`,
-              borderRadius: rem(5),
+              padding: `${rem(20)} ${rem(20)}`,
+              borderRadius: rem(10),
+              backgroundColor: '#FFF', // Adjust background color as needed
             },
             // Apply styles to other parts as needed, e.g., wrapper or icon
           }),
