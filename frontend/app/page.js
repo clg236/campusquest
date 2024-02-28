@@ -61,6 +61,7 @@ export default function Home() {
   }
 
   function DynamicTable({ data }) {
+    // console.log(Object.keys(data['rows']).length);
     if (data && data.error) {
       setError(data.error)
       setHint(data.hint)

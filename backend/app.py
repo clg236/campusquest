@@ -4,6 +4,7 @@ import pymysql
 import os
 from openai import OpenAI
 import json
+import sys
 
 app = Flask(__name__)
 CORS(app);
@@ -47,19 +48,30 @@ def execute_sql():
     if not sql_query:
         return jsonify({"error": "SQL query is missing."})
 
+    connection = None
     try:
         connection = pymysql.connect(host=DB_HOST, user=DB_USER, password=DB_PASSWORD, db=db)
         with connection.cursor() as cursor:
+            sql_query = sql_query.strip()
+            lin = sql_query.lower().find("limit") + 6
+            lis = sql_query[lin:].lower().find(" ")
+            if "limit" not in sql_query.lower():
+                if sql_query[-1] == ";": sql_query = sql_query[:-1] + " LIMIT 100;"
+                else: sql_query += " LIMIT 100"
+            elif "limit" in sql_query.lower() and int(sql_query[lin:lis]) > 100:
+                sql_query = sql_query.replace("limit", "LIMIT")
+                sql_query = sql_query.replace(f"LIMIT {sql_query[lin:lis]}", "LIMIT 100")
             cursor.execute(sql_query)
             column_names = [col[0] for col in cursor.description]
             result = cursor.fetchall()
+            connection.close()
             return jsonify({"columns": column_names, "rows": result})
     except Exception as e:
         error_message = str(e)
         hint = send_to_llm(error_message, sql_query)
         return jsonify({"error": error_message, "hint": hint})
-    finally:
-        connection.close()
+    # finally:
+    #     connection.close()
 
 if __name__ == '__main__':
     app.run(debug=True, port=3000, use_reloader=True)
