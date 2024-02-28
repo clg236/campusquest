@@ -27,10 +27,10 @@ def feedback():
             records = cursor.fetchall()
             formatted_records = "\n".join([f"Name: {record[1]}, SQL Query: {record[2]}, Executed At: {record[3]}" for record in records])
             
-            prompt = f"Please take a look at these SQL queries and let me know if anyone needs a bit of extra help:\n{formatted_records}. Please  split feedback into individual feedback items separated by a double newline (\n\n)"
+            prompt = f"Please take a look at these SQL queries and let me know if anyone needs a bit of extra help:\n{formatted_records}. Can you also give me some suggestions for how to help these students?"
             
             response = client.chat.completions.create(
-                model="gpt-4", 
+                model="gpt-3.5-turbo", 
                 messages=[
                     {
                         "role": "system",

@@ -107,7 +107,7 @@ export default function Home() {
           {data['rows'].map((row, rowIndex) => (
             <Table.Tr key={rowIndex}>
               {columns.map((col, cellIndex) => (
-                <Table.Td key={cellIndex}>{truncateText(row[col], 30)}</Table.Td> 
+                <Table.Td key={cellIndex}><Text maw={200} truncate="end">{row[col]}</Text></Table.Td> 
               ))}
             </Table.Tr>
           ))}
