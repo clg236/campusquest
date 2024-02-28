@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pymysql
+import datetime
 import os
 from openai import OpenAI
 import json
@@ -15,6 +16,36 @@ DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_NAME = os.getenv("DB_NAME")
 
 client = OpenAI(api_key=os.getenv("OPEN_AI_KEY"))
+
+@app.route('/feedback', methods=['GET'])
+def feedback():
+    connection = pymysql.connect(host=DB_HOST, user=DB_USER, password=DB_PASSWORD, db='campus_quest')
+    
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM queries")
+            records = cursor.fetchall()
+            formatted_records = "\n".join([f"Name: {record[1]}, SQL Query: {record[2]}, Executed At: {record[3]}" for record in records])
+            
+            prompt = f"Please take a look at these SQL queries and let me know if anyone needs a bit of extra help:\n{formatted_records}. Please  split feedback into individual feedback items separated by a double newline (\n\n)"
+            
+            response = client.chat.completions.create(
+                model="gpt-4", 
+                messages=[
+                    {
+                        "role": "system",
+                        "content": prompt,
+                    }
+                ],
+            )
+            
+            llm_response = response.choices[0].message.content
+            return jsonify({"response": llm_response})
+    
+    except Exception as e:
+        return jsonify({"error": str(e)})
+    finally:
+        connection.close()
 
 def send_to_llm(sql_error, sql_query):
     try:
@@ -38,15 +69,30 @@ def send_to_llm(sql_error, sql_query):
 
     except Exception as e:
         return str(e)
+    
+
 
 @app.route('/execute-sql', methods=['POST'])
 def execute_sql():
+
     data = request.json
     db = data.get('db', '')
+    name = data.get('name', '')
     sql_query = data.get('sql', '')
     
     if not sql_query:
         return jsonify({"error": "SQL query is missing."})
+    
+    # log the query
+    log_db_connection = pymysql.connect(host=DB_HOST, user=DB_USER, password=DB_PASSWORD, db='campus_quest')
+    try:
+        with log_db_connection.cursor() as cursor:
+            insert_query = "INSERT INTO queries (name, sql_query, executed_at) VALUES (%s, %s, %s)"
+            executed_at = datetime.datetime.now()
+            cursor.execute(insert_query, (name, sql_query, executed_at))
+            log_db_connection.commit()
+    finally:
+        log_db_connection.close()
 
     connection = None
     try:

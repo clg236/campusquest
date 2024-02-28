@@ -2,12 +2,12 @@
 import { useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import Link from 'next/link';
-import { Select, Loader, Modal, Text, Image, Table, Stack, Textarea, Container, Center, Title, Button } from '@mantine/core';
+import { TextInput, Select, Loader, Modal, Text, Image, Table, Stack, Textarea, Container, Center, Title, Button } from '@mantine/core';
 import { Wand } from 'tabler-icons-react';
 
 const homeGIFs = ['/dog_1.gif', 'magic_1.gif'];
 const successGIFs = ['/magic_1.gif'];
-const errorGIFs = ['/error_2.gif'];
+const errorGIFs = ['/error_1.gif','/error_2.gif', '/error_3.gif'];
 
 function getRandomGif(gifArray) {
   const randomIndex = Math.floor(Math.random() * gifArray.length);
@@ -23,6 +23,7 @@ export default function Home() {
   const [ loading, setLoading ] = useState(false)
   const [ currentGif, setCurrentGif ] = useState(getRandomGif(homeGIFs));
   const [ db, setDB ] = useState('yelp')
+  const [ name, setName ] = useState('')
 
 
   // super duper basic, just getting something easy done here
@@ -35,7 +36,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ sql, db: db })
+        body: JSON.stringify({ sql, db: db, name: name })
       });
       
       if (!response.ok) throw new Error('Failed to execute SQL');
@@ -85,15 +86,20 @@ export default function Home() {
     // const columns = data && data.length > 0 ? Object.keys(data['rows'][0]) : [];
     const columns = Array.from({ length: data['columns'].length }, (_, index) => index);
 
-    // console.log(data['columns']);
-    // console.log(columns); // need to return actual column names
-    // console.log(Object.keys(data['rows'][0]));
+    const truncateText = (text, maxLength) => {
+      if (text.length > maxLength) {
+        return `${text.substring(0, maxLength)}...`;
+      }
+      return text;
+    };
+
     return (
+      <Table.ScrollContainer>
       <Table striped highlightOnHover>
         <Table.Thead>
           <Table.Tr>
             {data['columns'].map((col, index) => (
-              <Table.Th key={index}>{col}</Table.Th>
+              <Table.Th style={{ whiteSpace: 'normal' }} key={index}>{col}</Table.Th>
             ))}
           </Table.Tr>
         </Table.Thead>
@@ -101,30 +107,40 @@ export default function Home() {
           {data['rows'].map((row, rowIndex) => (
             <Table.Tr key={rowIndex}>
               {columns.map((col, cellIndex) => (
-                <Table.Td key={cellIndex}>{row[col]}</Table.Td> 
+                <Table.Td key={cellIndex}>{truncateText(row[col], 30)}</Table.Td> 
               ))}
             </Table.Tr>
           ))}
         </Table.Tbody>
       </Table>
+      </Table.ScrollContainer>
     );
   }
 
   return (
+    <>
     <Container
-      padding="lg"
-      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100vh' }}
-    >
-      <Stack>
+      padding="xs"
+      mb={30}
+      >
         <Title style={{ fontSize: 40 }} ta='center'>QUERY QUEST</Title>
         <Center>
-          <Image mt={30} src={currentGif} style={{ borderRadius: '15px'}} width={500}/>
+          <Image mt={30} src={currentGif} style={{ borderRadius: '15px'}} w={200}/>
         </Center>
+        <TextInput
+          miw={400}
+          style={{ fontSize: 20 }}
+          label='Your Name'
+          value={name}
+          onChange={(event) => setName(event.currentTarget.value)}
+        />
+      <Stack>
         <Select 
+        miw={400}
         label="Choose a Database"
           style={{ width: 300, fontSize: 20 }}
           data={['yelp', 'campus_quest']}
-          value='YELP'
+          value={db}
           onChange={setDB}
           placeholder='SELECT'
           searchable={false}
@@ -137,9 +153,11 @@ export default function Home() {
           value={sql}
           onChange={(event) => setSql(event.currentTarget.value)}
         />
-        <Button variant='big-button' rightSection={loading ? <Loader /> : <Wand />} onClick={handleExecuteSQL} />
-        {queryResults && <DynamicTable data={queryResults} />}
+        <Button variant='big-button' rightSection={loading ? <Loader color='white' /> : <Wand />} onClick={handleExecuteSQL} />
       </Stack>
+      
     </Container>
+    {queryResults && <DynamicTable data={queryResults} />}
+    </>
   );
 }
