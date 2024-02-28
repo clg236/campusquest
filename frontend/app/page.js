@@ -99,7 +99,7 @@ export default function Home() {
         <Table.Thead>
           <Table.Tr>
             {data['columns'].map((col, index) => (
-              <Table.Th style={{ whiteSpace: 'normal' }} key={index}>{col}</Table.Th>
+              <Table.Th style={{ whiteSpace: 'normal' }} key={index}><Text maw={200} truncate="end">{col}</Text></Table.Th>
             ))}
           </Table.Tr>
         </Table.Thead>
@@ -107,7 +107,7 @@ export default function Home() {
           {data['rows'].map((row, rowIndex) => (
             <Table.Tr key={rowIndex}>
               {columns.map((col, cellIndex) => (
-                <Table.Td key={cellIndex}><Text maw={200} truncate="end">{row[col]}</Text></Table.Td> 
+                <Table.Td key={cellIndex}><Text truncate="end">{row[col]}</Text></Table.Td> 
               ))}
             </Table.Tr>
           ))}
